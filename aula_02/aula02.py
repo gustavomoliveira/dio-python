@@ -1,7 +1,7 @@
 """ função input(). retorna o valor convertido em string. sintax -- input(prompt) """
-""" 
+
 nome = input('Digite seu nome: ')
-print(f'Meu nome é {nome.capitalize()}') """
+print(f'Meu nome é {nome.capitalize()}')
 
 """ função print(). sintax -- print(object(s), sep=separator, end=end, file=file, flush=flush) """
 
