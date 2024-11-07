@@ -1,5 +1,5 @@
 # 1 - limite de 10 transações, sejam elas saque ou depósitos, por dia (armazenar data para comparação)
-# 2 - se o usuário tentar afzer uma transação após atingir o limite, deve ser informado que ele excedeu o número de transações
+# 2 - se o usuário tentar fazer uma transação após atingir o limite, deve ser informado que ele excedeu o número de transações
 # permitidas para aquele dia
 # 3 - Mostre no extrato a data e hora de todas as transações (operações)
 
@@ -32,38 +32,37 @@ def menu():
         '-----------------------\n'
         )
 
-def sacar(saques, limite, saldo, valor, extrato):
-    if saldo < valor:
-        return saques, saldo, extrato, '\nSaldo indisponível. Não é possível realizar a transação.\n'
-    if saques <= 0:
-        return saques, saldo, extrato, '\nLimite de saques diário excedido.\n'
-    if limite < valor:
-        return saques, saldo, extrato, '\nO valor limite permitido por saque é de R$500,00.\n'
-    
-    saldo -= valor
-    saques -= 1
-    extrato += f'Saque: R${valor:.2f}.\n'
-    return saques, saldo, extrato, f'\nSaque de R${valor:.2f} realizado com sucesso!\n'
+def sacar(dados, valor):
+    if dados[2] < valor:
+        return '\nSaldo indisponível. Não é possível realizar a transação.\n'
+    if dados[0] <= 0:
+        return '\nLimite de saques diário excedido.\n'
+    if dados[3] < valor:
+        return '\nO valor limite permitido por saque é de R$500,00.\n'
+        
+    dados[2] -= valor
+    dados[0] -= 1
+    dados[1] += f'Saque: R${valor:.2f}.\n'
+    return f'\nSaque de R${valor:.2f} realizado com sucesso!\n'
   
-def depositar(valor, saldo, extrato):
+def depositar(valor, dados):
     if valor > 0:
-        saldo += valor
-        extrato += f'Depósito: R${valor:.2f}.\n'
-        return saldo, extrato, f'\nDepósito de R${valor:.2f} realizado com sucesso!\n'
+        dados[2] += valor
+        dados[1] += f'Depósito: R${valor:.2f}.\n'
+        return f'\nDepósito de R${valor:.2f} realizado com sucesso!\n'
     else:
         return '\nValor incorreto. Insira novamente.\n'
     
-def exibir_extrato(extrato, saldo):
-    if not extrato:
+def exibir_extrato(dados):
+    if not dados[1]:
         print('\nNão foram realizadas movimentações.\n')
     else:
         print(f'\n----- EXTRATO -----\n')
-        print(f'{extrato}')
-        print(f'Saldo total: R${saldo:.2f}')
-        print('\n--------------------\n')  
-    return extrato
+        print(f'{dados[1]}')
+        print(f'Saldo total: R${dados[2]:.2f}')
+        print('\n--------------------\n')
 
-def escolher_operacao(saques, limite, saldo, extrato):
+def escolher_operacao(dados):
     while True:
         menu()
         opcao = validar_opcao('Digite a operação deseja realizar: ')
@@ -71,23 +70,21 @@ def escolher_operacao(saques, limite, saldo, extrato):
         match opcao:
             case 1:
                 valor_saque = validar_valor('Digite o valor desejado para saque: ')
-                saques, saldo, extrato, mensagem_saque = sacar(saques, limite, saldo, valor_saque, extrato)
+                mensagem_saque = sacar(dados, valor_saque)
                 print(mensagem_saque)
             case 2:
                 valor_deposito = validar_valor('Digite o valor desejado para depósito: ')
-                saldo, extrato, mensagem_deposito = depositar(valor_deposito, saldo, extrato)
+                mensagem_deposito = depositar(valor_deposito, dados)
                 print(mensagem_deposito)
             case 3:
-                exibir_extrato(extrato, saldo)
+                exibir_extrato(dados)
             case 0:
                 print('\nObrigado por usar o nosso sistema!')
                 break
             case _:
                 print('\nDigite uma opção válida.')
 
-numero_saque_diario = 3 # numero de saques diários permitidos
-extrato = '' # extrato
-saldo = 5000 # saldo inicial é de 0
-limite = 500 # limite de valor de cada saque
-escolher_operacao(numero_saque_diario, limite, saldo, extrato)
+# n˚ de saques diários, extrato, saldo, limite do saque
+dados = [3, '', 5000, 500]
+escolher_operacao(dados)
 
