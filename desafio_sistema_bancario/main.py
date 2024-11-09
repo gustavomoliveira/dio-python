@@ -1,5 +1,5 @@
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def validar_opcao(msg):
     while True:
@@ -25,9 +25,10 @@ def data_hoje():
 
 def resetar_operacoes(dados, operacoes):
     hoje = datetime.now().date()
-    ultima_operacao = datetime.strptime(operacoes[-1][2], '%d/%m/%Y').date()
-    if ultima_operacao < hoje:
-        dados[0] = 10
+    if operacoes:
+        ultima_operacao = datetime.strptime(operacoes[-1][2], '%d/%m/%Y').date()
+        if ultima_operacao < hoje:
+            dados[0] = 10
 
 def menu():
     print(
@@ -80,16 +81,15 @@ def exibir_extrato(dados, operacoes):
         for operacao in operacoes:
             print(f'{operacao[0]}: R${operacao[1]:.2f}')
             print(f'Data: {operacao[2]}\n')
+        print(f'Operações Restantes no Dia: {dados[0]}')
         print(f'Saldo total: R${dados[2]:.2f}')
         print('\n--------------------\n')
 
 def escolher_operacao(dados, operacoes):
     while True:
+        resetar_operacoes(dados, operacoes)
         menu()
         opcao = validar_opcao('Digite a operação deseja realizar: ')
-
-        if operacoes:
-            resetar_operacoes(dados, operacoes)
 
         match opcao:
             case 1:
@@ -108,7 +108,7 @@ def escolher_operacao(dados, operacoes):
             case _:
                 print('\nDigite uma opção válida.')
 
-# n˚ de saques diários, extrato, saldo, limite do saque
+# saques diários, extrato, saldo, limite do saque
 dados = [10, '', 5000, 500]
 operacoes = []
 escolher_operacao(dados, operacoes)
