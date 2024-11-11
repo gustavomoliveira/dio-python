@@ -1,7 +1,7 @@
 """ Date, Datetime, Time """
 
 # poderia usar o import datetime, mas existe uma forma específica para acessar uma determinada classe
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 
 data = date(2024, 10, 28)
 print(data)
@@ -46,4 +46,10 @@ d = datetime.strptime(date_string, '%d/%m/%Y %H:%M')
 print(d)
 
 # timezones
+# biblioteca pytz
 
+# criando timezones somento com python, sem biblioteca
+data_oslo = datetime.now(timezone(timedelta(hours=2)))
+data_sao_paulo = datetime.now(timezone(timedelta(hours=-3)))
+print(data_oslo)
+print(data_sao_paulo)
