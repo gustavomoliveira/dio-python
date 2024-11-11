@@ -90,7 +90,6 @@ def cadastrar_usuario(usuarios):
             print('\nCadastro de usuário finalizado.\n')
             break
     
-
 def cadastrar_conta(usuarios, contador):
     conta_usuario = validar_entrada_cpf('Digite o CPF do usuário (apenas números): ')
 

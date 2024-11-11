@@ -1,1 +1,0 @@
-def realizar_operacao(dados):
