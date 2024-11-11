@@ -1,34 +1,4 @@
-
-from datetime import datetime
-
-def validar_opcao(msg):
-    while True:
-        try:
-            opcao = int(input(msg))
-            if 0 <= opcao <= 3:
-                return opcao
-            else:
-                print('ERRO: Selecione uma opção válida no Menu.')
-        except ValueError:
-            print('ERRO: Digite apenas números inteiros.')
-
-def validar_valor(msg):
-    while True:
-        try:
-            valor = float(input(msg))
-            return valor
-        except ValueError:
-            print('ERRO: Digite um número válido.')
-
-def data_hoje():
-    return datetime.now().strftime('%d/%m/%Y')
-
-def resetar_operacoes(dados, operacoes):
-    hoje = datetime.now().date()
-    if operacoes:
-        ultima_operacao = datetime.strptime(operacoes[-1][2], '%d/%m/%Y').date()
-        if ultima_operacao < hoje:
-            dados[0] = 10
+from utilitarios import *
 
 def menu():
     print(
@@ -36,6 +6,9 @@ def menu():
         '[1] - Sacar\n'
         '[2] - Depositar\n'
         '[3] - Visualizar\n'
+        '[4] - Cadastrar Usuário\n'
+        '[5] - Cadastrar Conta\n'
+        '[6] - Exibir Contas\n'
         '[0] - Sair\n\n'
         '-----------------------\n'
         )
@@ -84,8 +57,74 @@ def exibir_extrato(dados, operacoes):
         print(f'Operações Restantes no Dia: {dados[0]}')
         print(f'Saldo total: R${dados[2]:.2f}')
         print('\n--------------------\n')
+     
+def cadastrar_usuario(usuarios):
+    endereco = ''
+    while True:
+        nome = validar_texto('Digite o nome para cadastro: ')
+        nascimento = validar_nascimento('Digite sua data de nascimento (Formato: dd/mm/aaaa): ')
+        cpf = validar_duplicidade_cpf(usuarios, 'Digite o seu CPF (apenas números): ')
+        
+        logradouro = validar_texto('Digite o nome de sua rua de residência (apenas a rua/avenida, sem números ou bairro): ')
+        endereco += logradouro + ''
+        
+        num = validar_num_endereco('Digite o número da sua residência: ')
+        endereco += ' ' + num + ' '
+        
+        cidade = validar_cidade('Digite a sua cidade e estado(Formato: cidade/sigla): ')
+        endereco += cidade + '.'
+        
+        cadastro = [nome, nascimento, cpf, endereco, []]
+        usuarios.append(cadastro)
+        print('\nCadastro realizado com sucesso!\n')
+        print('Dados do cadastro:\n')
+        print(f'Nome: {nome}')
+        print(f'Data de nascimento: {nascimento}')
+        print(f'CPF: {cpf}')
+        print(f'Endereço: {endereco}')
+        print('\n----------------------------------\n')
+        endereco = ''
 
-def escolher_operacao(dados, operacoes):
+        seguir = validar_seguir('Deseja realizar outro cadastro?(Digite "s/n"): ')
+        if seguir == 'n':
+            print('\nCadastro de usuário finalizado.\n')
+            break
+    
+
+def cadastrar_conta(usuarios, contador):
+    conta_usuario = validar_entrada_cpf('Digite o CPF do usuário (apenas números): ')
+
+    for usuario in usuarios:
+        if usuario[2] == conta_usuario:
+            agencia = '0001'
+            num_conta = contador
+            conta = [num_conta, agencia]
+            usuario[4].append(conta)
+            print(f'\nConta cadastrada com sucesso para o usuário {usuario[0]}!\n')
+            print(f'Conta: {conta[0]}, Agência: {conta[1]}\n')
+            return contador + 1
+        
+    novo_cadastro = validar_seguir('\nUsuário não encontrado. Deseja cadastrar um novo usuário?(Digite "s/n"):\n')
+    if novo_cadastro == 's':
+        cadastrar_usuario(usuarios)
+    else:
+        print('\nCadastro de Conta encerrado.')
+    return contador
+
+def exibir_contas(usuarios):
+    print(f'\n----- Contas Cadastradas -----\n')
+    for usuario in usuarios:
+        if not usuario[4]:
+            print('Não foram encontradas contas cadastradas.\n')
+        else:
+            print(f'Usuário: {usuario[0]}\n')
+            print(f'CPF: {usuario[2]}\n')
+            for conta in usuario[4]:
+                print(f'Conta Corrente: {conta[0]}\n')
+                print(f'Agência: {conta[1]}\n')
+    print('----------------------------------\n')
+
+def escolher_operacao(dados, operacoes, usuarios, contador):
     while True:
         resetar_operacoes(dados, operacoes)
         menu()
@@ -102,8 +141,14 @@ def escolher_operacao(dados, operacoes):
                 print(mensagem_deposito)
             case 3:
                 exibir_extrato(dados, operacoes)
+            case 4:
+                cadastrar_usuario(usuarios)
+            case 5:
+                contador = cadastrar_conta(usuarios, contador)
+            case 6:
+                exibir_contas(usuarios)
             case 0:
-                print('\nObrigado por usar o nosso sistema!')
+                print('\nObrigado por usar o nosso sistema!\n')
                 break
             case _:
                 print('\nDigite uma opção válida.')
@@ -111,4 +156,9 @@ def escolher_operacao(dados, operacoes):
 # saques diários, extrato, saldo, limite do saque
 dados = [10, '', 5000, 500]
 operacoes = []
-escolher_operacao(dados, operacoes)
+usuarios = []
+contador_geral_contas = 1
+escolher_operacao(dados, operacoes, usuarios, contador_geral_contas)
+
+
+
